@@ -13,3 +13,5 @@ router .post('/:id' , (req, res) => {
     res.json('좋아요 삭제');
 
 })
+
+module.exports = router;
