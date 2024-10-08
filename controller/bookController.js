@@ -11,7 +11,7 @@ const allBooks = (req, res)=>{
     currentPage = parseInt(currentPage);
     let offset = limit * (currentPage-1);
 
-    let query = `SELECT * FROM books `;
+    let query = `SELECT *, (SELECT COUNT(*) FROM likes WHERE liked_book_id = books.id) FROM books `;
     let value = [];
 
     if (category_id && news){
@@ -43,9 +43,15 @@ const allBooks = (req, res)=>{
 const bookDetail = (req, res) => {
     let {id} = req.params;
     id = parseInt(id);
+    let user_id = req.body;
 
-    const query = `SELECT * FROM books LEFT JOIN category ON books.category_id = category.id  WHERE books.id = ?`
-    connection.query(query, id, (err, rows) => {
+    const query = `SELECT *, (SELECT count(*) FROM likes WHERE books.id = liked_book_id) AS likes, 
+                    (SELECT EXISTS (SELECT * FROM likes WHERE user_id = ? AND liked_book_id = ?)) AS liked 
+                    FROM books LEFT JOIN category ON category.category_id = books.category_id WHERE books.id = ?;`
+
+    let values = [user_id, id, id];
+
+    connection.query(query, values, (err, rows) => {
         if (err)
             return res.status(StatusCodes.BAD_REQUEST).end();
         if (rows[0])
@@ -63,7 +69,7 @@ const bookCategory = (req, res) => {
     let {id} = req.params;
     id = parseInt(id);
 
-    const query = `SELECT * FROM books WHERE id = ?`
+    const query = `SELECT * FROM books WHERE category_id = ?`
     connection.query(query, id,(err, rows) => {
         if (err)
             return res.status(StatusCodes.BAD_REQUEST).end();

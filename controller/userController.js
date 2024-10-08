@@ -33,7 +33,6 @@ const login = (req, res) => {
       if (loginUser && deCodedPassword == loginUser.password){
               const token = jwt.sign({
                 email : loginUser.email
-  
               }, process.env.PRIVATE_KEY, {
                 expiresIn : '5m', // 만료시간 설정
                 issuer : 'an'
