@@ -69,8 +69,10 @@ const bookCategory = (req, res) => {
     let {id} = req.params;
     id = parseInt(id);
 
-    const query = `SELECT * FROM books WHERE category_id = ?`
-    connection.query(query, id,(err, rows) => {
+    const query = `SELECT cartItems.id, book_id, title, summary, quantity, price 
+                FROM cartItems LEFT JOIN books 
+                ON cartItems.book_id = books.id AND user_id = ?`
+    connection.query(query, user_id, (err, rows) => {
         if (err)
             return res.status(StatusCodes.BAD_REQUEST).end();
         if (rows[0])
