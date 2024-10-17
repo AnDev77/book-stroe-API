@@ -94,6 +94,21 @@ const passwordReset = (req, res) => {
 
 }
 
+const ensureAuthorization = (req, res) => {
+    try {
+        let receiverJwt = req.headers["authorization"];
+        console.log("received jwt: " , receiverJwt);
+
+        let decodedJwt = jwt.verify(receiverJwt, process.env.PRIVATE_KEY);
+        console.log(decodedJwt);
+        return decodedJwt;
+    } catch(err){
+        console.log(err.name);
+        console.log(err.message);
+    }
+
+}
+
 module.exports = {
     join,
     login,
